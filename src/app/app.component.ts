@@ -2,13 +2,16 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-// And this is the logic when we don't want to give anyone access to it or a chance to edit it.
+  // All tabs functioning as required: 30-70 layout, content display, PDF generation with preserved formatting and clickable links >
+ html2pdf: any;
+
   @ViewChild('pdfContent') pdfContent!: ElementRef;
   alltabs = [
     { 
@@ -158,11 +161,26 @@ In conclusion, while milk and dairy products offer valuable nutrients and health
     } finally {
       this.isGeneratingPDF = false;
     }
+    
+
+    function downloadPDF() {
+      const element = document.getElementById('pdf-content');
+      
+      const opt = {
+        margin:       0.5,
+        filename:     'example.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        enableLinks:  true // Makes links clickable
+      };
+    
+      // html2pdf().set(opt).from(element).save();
+    }
 
 
 
-
-
+    
    
     
   }
@@ -173,195 +191,5 @@ In conclusion, while milk and dairy products offer valuable nutrients and health
 
 
 
-//this is the another logic of html to pdf converter by using this below logic person can copy 
-// and paste the text and link is clickable . we can achive this using canva
-
-// @ViewChild('pdfContent') pdfContent!: ElementRef;
-
-// alltabs = [
-//   { 
-//     id: 1, 
-//     title: 'Fruits', 
-//     content: `
-//       <h2 style="color: #2c3e50;">Nutritional Powerhouses</h2>
-//       <img src="https://cdn.pixabay.com/photo/2016/07/22/09/59/fruits-1535080_250.jpg" alt="Fresh Fruits" width="250">
-//       <p>Fruits provide essential vitamins, minerals, and antioxidants. They help:</p>
-//       <ul>
-//         <li>Boost immunity with vitamin C</li>
-//         <li>Improve digestion through fiber</li>
-//         <li>Reduce disease risk with antioxidants</li>
-//       </ul>
-//       <p>Learn more: <a href="https://www.healthline.com/nutrition/healthy-fruits">Fruit Nutrition Guide</a></p>
-//     `
-//   },
-//   { 
-//     id: 2, 
-//     title: 'Grains', 
-//     content: `
-//       <h2 style="color: #2c3e50;">Whole Grain Benefits</h2>
-//       <img src="https://cdn.pixabay.com/photo/2018/05/21/17/32/whole-grain-3418865_250.jpg" alt="Grains" width="300">
-//       <p>Whole grains are rich in:</p>
-//       <ol>
-//         <li>Fiber for digestive health</li>
-//         <li>B vitamins for energy</li>
-//         <li>Essential minerals like iron and magnesium</li>
-//       </ol>
-//       <p>Visit: <a href="https://www.wholegrainscouncil.org">Whole Grains Council</a></p>
-//     `
-//   },
-//   { 
-//     id: 3, 
-//     title: 'Contact', 
-//     content: `
-//       <h2 style="color: #2c3e50;">Get in Touch</h2>
-//       <img src="https://cdn.pixabay.com/photo/2016/06/01/12/02/contact-1428761_250.jpg" alt="Contact" width="200">
-//       <p>Email: <a href="mailto:info@nutrition.com">info@nutrition.com</a></p>
-//       <p>Phone: <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-//       <p>Website: <a href="https://www.nutritionguide.com">www.nutritionguide.com</a></p>
-//     `
-//   }
-// ];
-
-// activeTab = 1;
-// activeTabContent = this.alltabs.find(tab => tab.id === this.activeTab)?.content;
-// isGeneratingPDF = false;
-
-// setActiveTab(tabId: number) {
-//   this.activeTab = tabId;
-//   this.activeTabContent = this.alltabs.find(tab => tab.id === tabId)?.content;
-// }
-
-// async generatePDF() {
-//   this.isGeneratingPDF = true;
-//   try {
-//     const pdf = new jsPDF('p', 'mm', 'a4');
-//     const margin = 10;
-//     const pageWidth = pdf.internal.pageSize.getWidth() - 2 * margin;
-
-//     // Process each tab in order
-//     for (const [index, tab] of this.tabs.entries()) {
-//       // Create temporary container for this tab's content
-//       const tempDiv = document.createElement('div');
-//       tempDiv.style.width = `${pageWidth}mm`;
-//       tempDiv.style.padding = '15px';
-//       tempDiv.style.boxSizing = 'border-box';
-//       tempDiv.style.fontFamily = 'Arial, sans-serif';
-//       tempDiv.style.lineHeight = '1.6';
-//       tempDiv.innerHTML = `
-//         <h2 style="color: #2c3e50; margin-bottom: 15px;">${tab.title}</h2>
-//         <div style="font-size: 14px;">${tab.content}</div>
-//       `;
-
-//       document.body.appendChild(tempDiv);
-      
-//       // Render to canvas with enhanced settings
-//       const canvas = await html2canvas(tempDiv, {
-//         scale: 3, // High resolution for better quality
-//         logging: false,
-//         useCORS: true,
-//         allowTaint: true,
-//         onclone: (document, element) => {
-//           // Style links for PDF visibility
-//           const links = element.getElementsByTagName('a');
-//           for (let i = 0; i < links.length; i++) {
-//             links[i].style.color = '#3498db';
-//             links[i].style.textDecoration = 'underline';
-//           }
-//         }
-//       });
-
-//       document.body.removeChild(tempDiv);
-
-//       // Add to PDF
-//       const imgData = canvas.toDataURL('image/png');
-//       const imgProps = pdf.getImageProperties(imgData);
-//       const imgWidth = pageWidth;
-//       const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-//       if (index !== 0) {
-//         pdf.addPage();
-//       }
-      
-//       pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
-
-//       // Add invisible text layer for selectable text and clickable links
-//       this.addTextLayer(pdf, tempDiv, margin, margin, imgWidth, imgHeight);
-//     }
-
-//     // Save the PDF
-//     pdf.save('nutrition-guide.pdf');
-//   } catch (error) {
-//     console.error('PDF generation failed:', error);
-//   } finally {
-//     this.isGeneratingPDF = false;
-//   }
-// }
-
-// private addTextLayer(pdf: jsPDF, element: HTMLElement, x: number, y: number, width: number, height: number) {
-//   const scaleX = width / element.offsetWidth;
-//   const scaleY = height / element.offsetHeight;
-  
-//   // Process all text nodes and links
-//   const walker = document.createTreeWalker(
-//     element,
-//     NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-//     {
-//       acceptNode: (node) => {
-//         if (node.nodeType === Node.ELEMENT_NODE) {
-//           return (node as HTMLElement).tagName === 'A' ? 
-//             NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-//         }
-//         return node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-//       }
-//     }
-//   );
-
-//   const nodes = [];
-//   let node;
-//   while (node = walker.nextNode()) {
-//     nodes.push(node);
-//   }
-
-//   nodes.forEach(node => {
-//     const range = document.createRange();
-//     range.selectNode(node);
-//     const rect = range.getBoundingClientRect();
-//     const parentRect = element.getBoundingClientRect();
-
-//     const textX = x + (rect.left - parentRect.left) * scaleX;
-//     const textY = y + (rect.top - parentRect.top + rect.height) * scaleY;
-//     const text = node.textContent?.trim() || '';
-//     const isLink = node.nodeType === Node.ELEMENT_NODE && (node as HTMLElement).tagName === 'A';
-
-//     if (text) {
-//       // Add invisible text
-//       pdf.setTextColor(0, 0, 0, 0); // Transparent
-//       pdf.setFontSize(12 * scaleY);
-//       pdf.text(text, textX, textY, {
-//         charSpace: 0.1,
-//         renderingMode: 'invisible'
-//       });
-
-//       // Add clickable link if applicable
-//       if (isLink) {
-//         const link = node as HTMLAnchorElement;
-//         const linkWidth = rect.width * scaleX;
-//         const linkHeight = rect.height * scaleY;
-//         pdf.link(textX, textY - linkHeight, linkWidth, linkHeight, {
-//           url: link.href
-//         });
-//       }
-//     }
-//   });
-// }
-
-
-
-
-
-
-
-
 }
-
 
